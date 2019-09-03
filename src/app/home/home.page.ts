@@ -52,8 +52,17 @@ export class HomePage {
   }
 
   borrar(i: number) {
-    console.log(i);
     this.animales.splice(i, 1);
+  }
+
+  doRefresh(event: any) {
+    console.log('Begin async operation');
+
+    setTimeout(() => {
+      this.animales = ANIMALES.slice(0); // Creamos un clon del objeto
+      console.log('Async operation has ended');
+      event.target.complete();
+    }, 2000);
   }
 
 }
