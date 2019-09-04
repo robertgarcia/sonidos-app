@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ANIMALES } from '../../data/data.animales';
 import { Animal } from '../../interfaces/animal.interface';
-
+import { IonReorderGroup, IonList } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +13,9 @@ export class HomePage {
   animales: Animal[] = [];
   audio = new Audio();
   audioTiempo: any;
+  ordenando = false;
+  @ViewChild(IonReorderGroup, { static: true }) reorderGroup: IonReorderGroup;
+  @ViewChild('lista', { static: true }) lista: IonList;
 
   constructor() {
     this.animales = ANIMALES.slice(0); // Creamos un clon del objeto
@@ -53,11 +56,11 @@ export class HomePage {
 
   borrar(i: number) {
     this.animales.splice(i, 1);
+    this.lista.closeSlidingItems();
   }
 
   doRefresh(event: any) {
     console.log('Begin async operation');
-
     setTimeout(() => {
       this.animales = ANIMALES.slice(0); // Creamos un clon del objeto
       console.log('Async operation has ended');
@@ -65,4 +68,27 @@ export class HomePage {
     }, 2000);
   }
 
+
+  doReorder(ev: any) {
+    // Before complete is called with the items they will remain in the
+    // order before the drag
+    // console.log('Before complete', this.animales);
+
+    const draggedItem = this.animales.splice(ev.detail.from, 1)[0];
+    this.animales.splice(ev.detail.to, 0, draggedItem);
+    ev.detail.complete();
+
+    // Finish the reorder and position the item in the DOM based on
+    // where the gesture ended. Update the animales variable to the
+    // new order of animales
+    // this.animales = ev.detail.complete(this.animales);
+
+    // After complete is called the animales will be in the new order
+    // console.log('After complete', this.animales);
+  }
+
+  toggleReorderGroup() {
+    this.reorderGroup.disabled = !this.reorderGroup.disabled;
+    this.ordenando = !this.reorderGroup.disabled;
+  }
 }
